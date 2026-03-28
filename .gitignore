@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Data (large files)
+*.h5
+*.hdf5
+*.pkl
+*.pth
+*.pt
+*.onnx
+
+# Images (keep some, ignore bulk)
+logs/
+output/
+real_images/*.jpg
+yolo_pcb_dataset/images/*.jpg
+
+# Logs
+*.log
+
+# System
+.DS_Store
+Thumbs.db

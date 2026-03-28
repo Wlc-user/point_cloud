@@ -1,0 +1,24 @@
+{
+  "total_images": 693,
+  "total_pcbs": 10,
+  "defect_types": {
+    "missing_hole": 115,
+    "mouse_bite": 115,
+    "open_circuit": 116,
+    "short": 116,
+    "spur": 115,
+    "spurious_copper": 116
+  },
+  "defects_per_pcb": {
+    "01": 120,
+    "04": 120,
+    "05": 60,
+    "06": 61,
+    "07": 60,
+    "08": 60,
+    "09": 60,
+    "10": 32,
+    "11": 60,
+    "12": 60
+  }
+}

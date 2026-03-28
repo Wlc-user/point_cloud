@@ -1,0 +1,193 @@
+# 工业缺陷检测系统配置文件
+
+system:
+  name: "Production Defect Detector"
+  version: "1.0.0"
+  debug: false
+  
+# 输入配置
+input:
+  # 输入源类型: camera / folder / rtsp
+  source_type: "folder"
+  
+  # 相机配置 (source_type = camera)
+  camera:
+    id: 0
+    width: 1920
+    height: 1080
+    fps: 30
+    exposure: -1  # -1 for auto
+  
+  # 文件夹配置 (source_type = folder)
+  folder:
+    path: "./input_images"
+    extensions: [".jpg", ".jpeg", ".png", ".bmp"]
+    recursive: false
+    # 处理完成后是否移动到processed文件夹
+    move_after_process: true
+  
+  # RTSP网络流配置 (source_type = rtsp)
+  rtsp:
+    url: "rtsp://admin:password@192.168.1.100:554/stream"
+    buffer_size: 10
+
+# 检测配置
+detection:
+  # 产品类型: pcb / metal / textile / general
+  product_type: "pcb"
+  
+  # 检测模式: template_match / deep_learning / rule_based
+  mode: "template_match"
+  
+  # 模板匹配配置
+  template_match:
+    template_path: "./templates/template.jpg"
+    threshold: 30
+    min_defect_area: 50
+    max_defect_area: 10000
+  
+  # 深度学习配置 (mode = deep_learning)
+  deep_learning:
+    model_path: "./models/defect_detector.onnx"
+    input_size: [640, 640]
+    confidence_threshold: 0.5
+    nms_threshold: 0.4
+    classes: ["scratch", "dent", "stain", "crack"]
+  
+  # 规则检测配置 (mode = rule_based)
+  rule_based:
+    # 边缘检测参数
+    edge_detection:
+      method: "canny"
+      threshold1: 50
+      threshold2: 150
+    
+    # 阈值分割参数
+    threshold:
+      method: "otsu"  # otsu / adaptive / binary
+      block_size: 11
+      c: 2
+
+# 输出配置
+output:
+  # 输出目录
+  directory: "./output"
+  
+  # 是否保存原始图像
+  save_original: true
+  
+  # 是否保存标注后的图像
+  save_annotated: true
+  
+  # 是否保存缺陷ROI区域
+  save_defect_rois: true
+  
+  # 是否生成JSON报告
+  generate_json_report: true
+  
+  # 是否生成CSV统计
+  generate_csv_stats: true
+  
+  # 是否保存到数据库
+  save_to_database: false
+  
+  # 数据库配置
+  database:
+    type: "sqlite"  # sqlite / mysql / postgresql
+    sqlite_path: "./defects.db"
+    # MySQL/PostgreSQL配置
+    host: "localhost"
+    port: 3306
+    username: "detector"
+    password: "password"
+    database: "defect_detection"
+
+# 报警配置
+alert:
+  # 是否启用报警
+  enabled: true
+  
+  # 触发报警的缺陷数量阈值
+  defect_count_threshold: 1
+  
+  # 触发报警的严重缺陷类型
+  severe_defects: ["crack", "break", "missing"]
+  
+  # 报警方式
+  methods:
+    # 声音报警
+    sound:
+      enabled: true
+      file: "./sounds/alert.wav"
+    
+    # 邮件报警
+    email:
+      enabled: false
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      username: "your_email@gmail.com"
+      password: "your_password"
+      recipients: ["manager@company.com"]
+    
+    # HTTP回调
+    webhook:
+      enabled: false
+      url: "http://your-server.com/api/alerts"
+      method: "POST"
+      headers:
+        Authorization: "Bearer your_token"
+    
+    # 停止生产线信号 (GPIO)
+    gpio:
+      enabled: false
+      pin: 18
+      active_low: false
+
+# 显示配置
+display:
+  # 是否实时显示
+  enabled: true
+  
+  # 显示窗口名称
+  window_name: "Defect Detection"
+  
+  # 显示尺寸
+  width: 1280
+  height: 720
+  
+  # 显示信息
+  show_fps: true
+  show_defect_count: true
+  show_timestamp: true
+  
+  # 键盘快捷键
+  shortcuts:
+    quit: "q"
+    pause: "space"
+    save: "s"
+    next: "n"
+
+# 性能配置
+performance:
+  # 处理线程数
+  num_workers: 4
+  
+  # 是否使用GPU加速
+  use_gpu: false
+  
+  # 批处理大小 (深度学习模式)
+  batch_size: 1
+  
+  # 跳帧处理 (实时视频)
+  skip_frames: 0
+  
+  # 最大处理队列长度
+  max_queue_size: 100
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG / INFO / WARNING / ERROR
+  file: "./logs/detector.log"
+  max_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

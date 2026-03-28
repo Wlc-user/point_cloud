@@ -1,0 +1,6 @@
+pandas
+numpy
+tushare
+matplotlib
+scikit-learn
+scipy
