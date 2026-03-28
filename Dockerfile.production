@@ -1,0 +1,100 @@
+# 工业缺陷检测系统 - 生产环境Docker镜像
+# 支持GPU加速和ONNX/TensorRT推理优化
+
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS base
+
+# 设置环境变量
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV CUDA_VISIBLE_DEVICES=0
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    python3.10 \
+    python3-pip \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    git \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置Python
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+RUN python -m pip install --upgrade pip
+
+# ============ 生产阶段 ============
+FROM base AS production
+
+# 安装Python依赖
+COPY requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# 复制应用代码
+COPY src/ /app/src/
+COPY production_defect_detector/ /app/production_defect_detector/
+COPY models/ /app/models/
+COPY templates/ /app/templates/
+
+# 设置工作目录
+WORKDIR /app
+
+# 创建非root用户
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+# 暴露端口
+EXPOSE 8000
+
+# 启动命令
+CMD ["python", "defect_detection_api.py", "--host", "0.0.0.0", "--port", "8000"]
+
+
+# ============ 开发阶段 ============
+FROM base AS development
+
+# 安装开发依赖
+COPY requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --no-cache-dir ultralytics tensorrt onnxruntime-gpu
+
+# 复制所有代码
+COPY . /app/
+
+WORKDIR /app
+
+CMD ["python", "-m", "fastapi", "run", "defect_detection_api.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+
+# ============ ONNX优化阶段 ============
+FROM base AS onnx
+
+# 安装ONNX相关依赖
+RUN pip install --no-cache-dir \
+    onnx \
+    onnxruntime-gpu \
+    onnxoptimizer
+
+# 复制训练好的模型
+COPY models/ /app/models/
+
+WORKDIR /app
+
+# ONNX优化脚本
+RUN echo '#!/bin/bash\n\
+echo "Optimizing ONNX model..."\n\
+python -c "\
+import onnx\n\
+from onnx import optimizer\n\
+\nmodel = onnx.load('/app/models/yolov8/train/weights/best.onnx')\n\
+passes = ['eliminate_deadend', 'eliminate_nop_cast', 'eliminate_nop_dropout', 'eliminate_nop_expand', 'eliminate_nop_flatten', 'eliminate_nop_transpose', 'extract_constant_to_initializer', 'fuse_add_bias_into_conv', 'fuse_bn_into_conv', 'fuse_consecutive_slices', 'fuse_matmul_add_bias_into_gemm', 'fuse_matmul_transpose_into_gemm', 'fuse_pad_into_conv', 'fuse_transpose_into_gemm']\n\
+optimized_model = optimizer.optimize(model, passes)\n\
+onnx.save(optimized_model, '/app/models/yolov8/train/weights/best_optimized.onnx')\n\
+print('ONNX model optimized!')\n\
+"\
+' > /app/optimize_onnx.sh
+
+CMD ["bash", "/app/optimize_onnx.sh"]

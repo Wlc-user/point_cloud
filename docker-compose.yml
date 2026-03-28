@@ -1,0 +1,74 @@
+# Docker Compose 配置
+# 工业缺陷检测系统 - 生产部署
+
+version: '3.8'
+
+services:
+  # 缺陷检测API服务
+  defect-detector:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: production
+    image: defect-detector:latest
+    container_name: defect-detector
+    ports:
+      - "8000:8000"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - MODEL_PATH=/app/models/yolov8/train/weights/best.pt
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./models:/app/models:ro
+      - ./templates:/app/templates:ro
+      - ./output:/app/output
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - defect-network
+
+  # Redis缓存 (可选)
+  redis:
+    image: redis:7-alpine
+    container_name: defect-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - defect-network
+
+  # Nginx反向代理 (可选)
+  nginx:
+    image: nginx:alpine
+    container_name: defect-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - defect-detector
+    restart: unless-stopped
+    networks:
+      - defect-network
+
+networks:
+  defect-network:
+    driver: bridge
+
+volumes:
+  redis-data:
