@@ -1,4 +1,4 @@
-# 工业机器视觉算法开发平台
+<img width="1031" height="666" alt="image" src="https://github.com/user-attachments/assets/4248378d-c0a9-4eaf-a120-715918f0e0cf" /># 工业机器视觉算法开发平台
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8.0-green)](https://opencv.org/)
@@ -215,6 +215,13 @@ opencv/
 3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 打开 Pull Request
+<img width="1031" height="666" alt="image" src="https://github.com/user-attachments/assets/28ed9077-ee56-4d81-96ec-c872b00b8679" />
+<img width="1034" height="704" alt="image" src="https://github.com/user-attachments/assets/e27ff1fe-3794-489c-8a2c-47c9b7f1299f" />
+<img width="1032" height="684" alt="image" src="https://github.com/user-attachments/assets/f69c18e3-2009-4240-bcd6-fa809e248e65" />
+<img width="1066" height="706" alt="image" src="https://github.com/user-attachments/assets/961e81bf-11db-4ded-a250-23ece13df89a" />
+<img width="721" height="684" alt="image" src="https://github.com/user-attachments/assets/4585f346-1182-40a4-b6ab-0c7dba8fbbef" />
+<img width="1042" height="681" alt="image" src="https://github.com/user-attachments/assets/fb2590c8-b21c-4148-bf8a-6027f6cfdd6c" />
+<img width="911" height="674" alt="image" src="https://github.com/user-attachments/assets/5606c9e3-f6ca-4cde-a2f0-61a1f642ff6f" />
 
 ## 许可证
 
