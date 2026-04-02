@@ -1,4 +1,8 @@
 <img width="658" height="646" alt="image" src="https://github.com/user-attachments/assets/0adcb13a-31e5-45c6-aa29-76fce4bcae9f" /><img width="1031" height="666" alt="image" src="https://github.com/user-attachments/assets/4248378d-c0a9-4eaf-a120-715918f0e0cf" /># 工业机器视觉算法开发平台
+<img width="1815" height="904" alt="image" src="https://github.com/user-attachments/assets/b748daaf-df73-4dd9-83c6-7ecc28bf6018" />
+<img width="1865" height="979" alt="image" src="https://github.com/user-attachments/assets/830ecc27-2ad1-4330-b5e5-7caf8d5db6cb" />
+<img width="1883" height="1019" alt="image" src="https://github.com/user-attachments/assets/54b65427-cb8a-433c-b1e2-f6ec54ea6435" />
+<img width="1667" height="752" alt="image" src="https://github.com/user-attachments/assets/26dcd610-955a-4236-82c7-6bf3ca66bb63" />
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8.0-green)](https://opencv.org/)
